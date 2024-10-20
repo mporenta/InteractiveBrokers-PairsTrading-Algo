@@ -1,28 +1,22 @@
 import datetime as dt
 import time
-
 import pandas as pd
 from models.base_model import BaseModel
-"""
-		
 
+"""
 def place_spread_order(self, qty):
-print('Placing spread orders...')
+    print('Placing spread orders...')
 
-contract_close = self.contracts
+    contract_close = self.contracts
 
-trade_close = self.place_market_order(contract_close, qty, self.on_filled)
-print('Order placed:', trade_close)
+    trade_close = self.place_market_order(contract_close, qty, self.on_filled)
+    print('Order placed:', trade_close)
 
+    self.is_orders_pending = True
+    self.pending_order_ids.add(trade_close.order.orderId)
 
-
-self.is_orders_pending = True
-
-self.pending_order_ids.add(trade_close.order.orderId)
-
-print('Order IDs pending execution:', self.pending_order_ids)
+    print('Order IDs pending execution:', self.pending_order_ids)
 """
-
 
 class PnLMonitorModel(BaseModel):
     def __init__(self, *args, max_drawdown_pct=1.0, **kwargs):
@@ -49,7 +43,6 @@ class PnLMonitorModel(BaseModel):
             self.ib.sleep(1)
             self.check_pnl_threshold()
 
-
     def check_pnl_threshold(self):
         """ Check if PnL exceeds the threshold and close positions if necessary """
         if self.pnl and self.pnl.unrealizedPnL <= -self.daily_loss_threshold:
@@ -57,51 +50,52 @@ class PnLMonitorModel(BaseModel):
             self.close_all_positions()
 
     def close_all_positions(self):
-    """ Close all open positions by fetching the current position quantities """
-    print('Attempting to close all positions...')
-    
-    # Fetch all open positions
-    open_positions = self.positions  # Positions are stored in BaseModel
-    
-    if not open_positions:
-        print("No positions to close.")
-        return
-    
-    # Iterate over open positions and place market orders to close each
-    for symbol, position in open_positions.items():
-        contract_close = position.contract
-        qty = position.position  # Get the current position quantity
+        """ Close all open positions by fetching the current position quantities """
+        print('Attempting to close all positions...')
         
-        if qty == 0:
-            print(f"No open position for {symbol}. Skipping...")
-            continue
-
-        # Ensure the symbol is tracked, otherwise log a warning
-        if symbol not in self.symbols:
-            print(f'[warn] {symbol} not tracked by model, but position exists. Skipping...')
-            continue
-
-        print(f"Placing order to close {qty} units of {symbol}")
+        # Fetch all open positions
+        open_positions = self.positions  # Positions are stored in BaseModel
         
-        try:
-            # Place the market order to close the position
-            trade_close = self.place_market_order(contract_close, -qty, self.on_filled)
-            print('Order placed to close position:', trade_close)
-
-            # Track the pending orders
-            self.is_orders_pending = True
-            self.pending_order_ids.add(trade_close.order.orderId)
-            print(f'Order ID {trade_close.order.orderId} pending execution.')
+        if not open_positions:
+            print("No positions to close.")
+            return
         
-        except Exception as e:
-            # Handle any errors during the order placement
-            print(f"Error placing order to close {symbol}: {str(e)}")
-            continue
+        # Iterate over open positions and place market orders to close each
+        for symbol, position in open_positions.items():
+            contract_close = position.contract
+            qty = position.position  # Get the current position quantity
+            
+            if qty == 0:
+                print(f"No open position for {symbol}. Skipping...")
+                continue
 
-    if not self.is_orders_pending:
-        print("All positions closed successfully.")
-    else:
-        print(f"Pending orders for closing positions: {self.pending_order_ids}")
+            # Ensure the symbol is tracked, otherwise log a warning
+            if symbol not in self.symbols:
+                print(f'[warn] {symbol} not tracked by model, but position exists. Skipping...')
+                continue
+
+            print(f"Placing order to close {qty} units of {symbol}")
+            
+            try:
+                # Place the market order to close the position
+                trade_close = self.place_market_order(contract_close, -qty, self.on_filled)
+                print('Order placed to close position:', trade_close)
+
+                # Track the pending orders
+                self.is_orders_pending = True
+                self.pending_order_ids.add(trade_close.order.orderId)
+                print(f'Order ID {trade_close.order.orderId} pending execution.')
+            
+            except Exception as e:
+                # Handle any errors during the order placement
+                print(f"Error placing order to close {symbol}: {str(e)}")
+                continue
+
+        if not self.is_orders_pending:
+            print("All positions closed successfully.")
+        else:
+            print(f"Pending orders for closing positions: {self.pending_order_ids}")
+
     def on_filled(self, trade):
         print('Order filled:', trade)
         self.pending_order_ids.remove(trade.order.orderId)
@@ -110,4 +104,8 @@ class PnLMonitorModel(BaseModel):
         # Update flag when all pending orders are filled
         if not self.pending_order_ids:
             self.is_orders_pending = False
-    
+```
+
+This formatted version maintains the correct indentation levels for each block of code, making it more readable and following Python's style conventions. The commented-out `place_spread_order` function at the beginning has also been properly indented within the triple quotes.
+
+Would you like me to explain or break down any part of this code?​​​​​​​​​​​​​​​​
