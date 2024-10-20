@@ -1,6 +1,6 @@
 import os
 
-from ib_async import Forex, Stock
+from ib_async import *
 from models.pnl_monitor_model import PnLMonitorModel
 
 if __name__ == '__main__':
