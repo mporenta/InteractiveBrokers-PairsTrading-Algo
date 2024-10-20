@@ -104,8 +104,3 @@ class PnLMonitorModel(BaseModel):
         # Update flag when all pending orders are filled
         if not self.pending_order_ids:
             self.is_orders_pending = False
-```
-
-This formatted version maintains the correct indentation levels for each block of code, making it more readable and following Python's style conventions. The commented-out `place_spread_order` function at the beginning has also been properly indented within the triple quotes.
-
-Would you like me to explain or break down any part of this code?​​​​​​​​​​​​​​​​
