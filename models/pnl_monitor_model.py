@@ -56,20 +56,52 @@ class PnLMonitorModel(BaseModel):
             print(f"PnL dropped below threshold: {self.pnl.unrealizedPnL}")
             self.close_all_positions()
 
-    def close_all_positions(self, qty):
-        print('Placing spread orders...')
+    def close_all_positions(self):
+    """ Close all open positions by fetching the current position quantities """
+    print('Attempting to close all positions...')
+    
+    # Fetch all open positions
+    open_positions = self.positions  # Positions are stored in BaseModel
+    
+    if not open_positions:
+        print("No positions to close.")
+        return
+    
+    # Iterate over open positions and place market orders to close each
+    for symbol, position in open_positions.items():
+        contract_close = position.contract
+        qty = position.position  # Get the current position quantity
+        
+        if qty == 0:
+            print(f"No open position for {symbol}. Skipping...")
+            continue
 
-        contract_close = self.contracts
+        # Ensure the symbol is tracked, otherwise log a warning
+        if symbol not in self.symbols:
+            print(f'[warn] {symbol} not tracked by model, but position exists. Skipping...')
+            continue
 
-        trade_close = self.place_market_order(contract_close, qty, self.on_filled)
-        print('Order placed:', trade_close)
+        print(f"Placing order to close {qty} units of {symbol}")
+        
+        try:
+            # Place the market order to close the position
+            trade_close = self.place_market_order(contract_close, -qty, self.on_filled)
+            print('Order placed to close position:', trade_close)
 
+            # Track the pending orders
+            self.is_orders_pending = True
+            self.pending_order_ids.add(trade_close.order.orderId)
+            print(f'Order ID {trade_close.order.orderId} pending execution.')
+        
+        except Exception as e:
+            # Handle any errors during the order placement
+            print(f"Error placing order to close {symbol}: {str(e)}")
+            continue
 
-        self.is_orders_pending = True
-
-        self.pending_order_ids.add(trade_close.order.orderId)
-        print('Order IDs pending execution:', self.pending_order_ids)
-
+    if not self.is_orders_pending:
+        print("All positions closed successfully.")
+    else:
+        print(f"Pending orders for closing positions: {self.pending_order_ids}")
     def on_filled(self, trade):
         print('Order filled:', trade)
         self.pending_order_ids.remove(trade.order.orderId)
