@@ -1,6 +1,7 @@
 eventkit==0.8.5
-ib_async==1.0.3
+asyncio==3.4.3
 nest-asyncio==1.0.0
+ib_async==1.0.3
 numpy==1.16.4
 pandas==0.24.2
 python-dateutil==2.8.0
