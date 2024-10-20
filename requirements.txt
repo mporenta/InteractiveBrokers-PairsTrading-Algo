@@ -1,5 +1,5 @@
 eventkit==0.8.5
-ib-insync==0.9.53
+ib_async==1.0.3
 nest-asyncio==1.0.0
 numpy==1.16.4
 pandas==0.24.2
