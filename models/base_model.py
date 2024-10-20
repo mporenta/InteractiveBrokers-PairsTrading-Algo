@@ -1,4 +1,4 @@
-from ib_insync import IB, Forex, Stock, MarketOrder
+from ib_async import IB, Forex, Stock, MarketOrder
 
 from util import order_util
 
