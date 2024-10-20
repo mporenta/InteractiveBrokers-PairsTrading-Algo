@@ -54,7 +54,7 @@ class PnLMonitorModel(BaseModel):
         print('Attempting to close all positions...')
         
         # Fetch all open positions
-        open_positions = self.positions  # Positions are stored in BaseModel
+        open_positions = self.on_position(position)  # Positions are stored in BaseModel
         
         if not open_positions:
             print("No positions to close.")
